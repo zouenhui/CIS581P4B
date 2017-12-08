@@ -24,7 +24,6 @@ def Relu(x):
   # TODO
   return y
 
-
 '''
   l2 loss layer
   - Input pred: prediction values
