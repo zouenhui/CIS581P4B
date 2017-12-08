@@ -32,11 +32,9 @@ def Relu(x):
   - Output loss: averaged loss
 '''
 def L2_loss(pred, gt):
-  lossSQ=np.dot((pred-gt),(pred-gt))
-  loss=lossSQ/float(pred.size)
+  lossSQ=(gt-pred)*(gt-pred)
+  loss=np.mean(lossSQ)
   return loss
-
-
 
 '''
   Cross entropy loss layer
@@ -46,5 +44,6 @@ def L2_loss(pred, gt):
 '''
 def Cross_entropy_loss(pred, gt):
   # TODO
-  
+  cel=-(gt*np.log(pred)+(1.0-gt)*np.log(1.0-pred))
+  loss=np.mean(cel)
   return loss
