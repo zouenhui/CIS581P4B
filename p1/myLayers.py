@@ -44,6 +44,6 @@ def L2_loss(pred, gt):
 '''
 def Cross_entropy_loss(pred, gt):
   # TODO
-  cel=-(gt*np.log(pred)+(1.0-gt)*np.log(1.0-pred))
-  loss=np.mean(cel)
+  cel=(gt*np.log(pred)+(1.0-gt)*np.log(1.0-pred))
+  loss=-np.mean(cel)
   return loss
