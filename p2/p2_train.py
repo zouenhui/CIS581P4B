@@ -1,7 +1,7 @@
 '''
   File name: p2_train.py
-  Author:
-  Date:
+  Author:En Hui Zou
+  Date:12/09/17
 '''
 
 import PyNet as net
