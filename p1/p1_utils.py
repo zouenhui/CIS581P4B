@@ -3,10 +3,31 @@
   Author:En Hui Zou
   Date:12/08/17
 '''
-def gradientS (gt,pred,x):
-    grad=(-2*gt+2*pred)*x
+import myLayers as mL
+
+def gradientSL2 (gt,pred,x,y):
+    dlossPred=2*(pred-gt)
+    dPredY=mL.Sigmoid(y)*(1-mL.Sigmoid(y))
+    dYW=x
+    grad=dlossPred*dPredY*dYW
+    return grad
+def gradientSEn (gt,pred,x,y):
+    dlossPred=
+    dPredY=mL.Sigmoid(y)*(1-mL.Sigmoid(y))
+    dYW=x
+    grad=dlossPred*dPredY*dYW
+    return grad
+    
+def gradientRL2 (gt,pred,x):
+    dlossPred=2*(pred-gt)
+    dPredY=
+    dYW=x
+    grad=dlossPred*dPredY*dYW
     return grad
 
-def gradientR (gt,pred,x):
-    grad=
+def gradientREn(gt,pred,x):
+    dlossPred=
+    dPredY=
+    dYW=x
+    grad=dlossPred*dPredY*dYW
     return grad

@@ -32,7 +32,7 @@ def Relu(x):
   - Output loss: averaged loss
 '''
 def L2_loss(pred, gt):
-  lossSQ=(gt-pred)*(gt-pred)
+  lossSQ=np.square(pred-gt)
   loss=np.mean(lossSQ)
   return loss
 
