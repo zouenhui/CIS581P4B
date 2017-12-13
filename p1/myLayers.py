@@ -10,10 +10,11 @@
   - Input x: ndarray
   - Output y: nonlinearized result
 '''
-def Sigmoid(x):
-  # TODO
-  return y
+import numpy as np
 
+def Sigmoid(x):
+  y=1/(1+np.exp(-x))
+  return y
 
 '''
   Relu layer
@@ -21,9 +22,8 @@ def Sigmoid(x):
   - Output y: nonlinearized result
 '''
 def Relu(x):
-  # TODO
+  y=np.maximum(x,0)
   return y
-
 
 '''
   l2 loss layer
@@ -32,10 +32,9 @@ def Relu(x):
   - Output loss: averaged loss
 '''
 def L2_loss(pred, gt):
-  # TODO
+  lossSQ=np.square(pred-gt)
+  loss=np.mean(lossSQ)
   return loss
-
-
 
 '''
   Cross entropy loss layer
@@ -45,4 +44,6 @@ def L2_loss(pred, gt):
 '''
 def Cross_entropy_loss(pred, gt):
   # TODO
+  cel=(gt*np.log(pred)+(1.0-gt)*np.log(1.0-pred))
+  loss=-np.mean(cel)
   return loss

@@ -58,7 +58,6 @@ for i in range (max_epoch_num):
   '''
   data_set_cur, label_set_cur = randomShuffle(data_set, label_set) # design function by yourself
 
-
   step = ...  # step is a int number
   for j in range (step):
     # obtain a mini batch for this step training
