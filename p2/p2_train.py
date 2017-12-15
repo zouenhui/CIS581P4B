@@ -4,12 +4,6 @@
   Date:12/09/17
 '''
 
-
-#part 2.2
-#lay_listConv = [
-#                       
-#               ]
-
 import numpy as np
 import matplotlib.pyplot as plt
 import PyNet as net
@@ -19,6 +13,7 @@ import p2_utils as ut2
   network architecture construction
   - Stack layers in order based on the architecture of your network
 '''
+num=4
 layer_listSig = [
     net.Flatten(),
     net.Linear(16, 4, bias=True),
@@ -33,7 +28,6 @@ layer_listRel=[
     net.Linear(4, 1, bias=True),
     net.Sigmoid()
 ]
-
 '''
   Define loss function
 '''
@@ -64,7 +58,6 @@ my_model4.set_input_channel(dim)
   - train N epochs, each epoch contains M steps, each step feed a batch-sized data for training,
     that is, total number of data = M * batch_size, each epoch need to traverse all data.
 '''
-
 # obtain data 
 [data_set, label_set] = ut2.loadData('p21_random_imgs.npy', 'p21_random_labs.npy')
 max_epoch_num = 1000
@@ -77,7 +70,7 @@ accuracy3 = np.zeros([max_epoch_num])
 loss_save4 = np.zeros([max_epoch_num])
 accuracy4= np.zeros([max_epoch_num])
 train_it = np.arange(1,max_epoch_num+1,1)
-
+np.random.seed(num)
 for i in range(max_epoch_num):
     data_set_cur, label_set_cur=ut2.randomShuffle(data_set,label_set)
     loss1, pred1 = my_model1.forward(data_set_cur,label_set_cur)
@@ -100,7 +93,7 @@ ax5.plot(train_it[1:i+1],loss_save1[1:i+1])
 ax5.set_title('Sigmoid L2 loss')
 ax5.set_xlabel('Iteration')
 ax5.set_ylabel('Loss')
-
+np.random.seed(num)
 for i in range(max_epoch_num):
     data_set_cur, label_set_cur=ut2.randomShuffle(data_set,label_set)
     loss2, pred2 = my_model2.forward(data_set_cur,label_set_cur)
@@ -121,7 +114,7 @@ ax6.plot(train_it[1:i+1],loss_save2[1:i+1])
 ax6.set_title('Sigmoid Entropy loss')
 ax6.set_xlabel('Iteration')
 ax6.set_ylabel('Loss')
-
+np.random.seed(num)
 for i in range(max_epoch_num):
     data_set_cur, label_set_cur=ut2.randomShuffle(data_set,label_set)
     loss3, pred3 = my_model3.forward(data_set_cur,label_set_cur)
@@ -142,6 +135,7 @@ ax7.plot(train_it[1:i+1],loss_save3[1:i+1])
 ax7.set_title('Relu L2 loss')
 ax7.set_xlabel('Iteration')
 ax7.set_ylabel('Loss')
+np.random.seed(num)
 for i in range(max_epoch_num):
     data_set_cur, label_set_cur=ut2.randomShuffle(data_set,label_set)
     loss4, pred4 = my_model4.forward(data_set_cur,label_set_cur)
@@ -162,5 +156,15 @@ ax8.plot(train_it[1:i+1],loss_save4[1:i+1])
 ax8.set_title('Relu Entropy loss')
 ax8.set_xlabel('Iteration')
 ax8.set_ylabel('Loss')
-plt.show()
-        
+
+#part 2.2
+lay_listConv = [
+                   net.Conv2d(16,7,padding = 0, stride = 1),
+                   net.Relu(),
+                   net.Linear(16, 4, bias=True),
+                   net.Sigmoid(),
+                   net.CConv2d(8,7,padding=0,stride=1),
+                   net.Relu(),
+                   net.Linear(4, 1, bias=True),
+                   net.Sigmoid()      
+               ]
