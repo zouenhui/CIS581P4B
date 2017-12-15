@@ -156,15 +156,45 @@ ax8.plot(train_it[1:i+1],loss_save4[1:i+1])
 ax8.set_title('Relu Entropy loss')
 ax8.set_xlabel('Iteration')
 ax8.set_ylabel('Loss')
-
+plt.show()
 #part 2.2
 lay_listConv = [
-                   net.Conv2d(16,7,padding = 0, stride = 1),
+                   net.Conv2d(16,7,padding = 0, stride = 1,bias=True),
+                   net.BatchNorm2D(),
                    net.Relu(),
-                   net.Linear(16, 4, bias=True),
-                   net.Sigmoid(),
-                   net.CConv2d(8,7,padding=0,stride=1),
+                   net.Conv2d(8,7,padding=0,stride=1,bias=True),
+                   net.BatchNorm2D(),
                    net.Relu(),
+                   net.Flatten(),
                    net.Linear(4, 1, bias=True),
                    net.Sigmoid()      
                ]
+loss_layer = net.Binary_cross_entropy_loss(average=True, name=None)
+optimizer = net.SGD_Optimizer(lr_rate=0.01, weight_decay=5e-4, momentum=0.99)
+my_model = net.Model(lay_listConv, loss_layer, optimizer, lr_decay=None)
+dim = 3  # RGB -----> dim = 1 (for grayscale)
+my_model.set_input_channel(dim)
+[data_set, label_set] = ut2.loadData('p22_line_imgs.npy', 'p22_line_labs.npy')
+max_epoch_num = 1000
+loss_save = np.zeros([max_epoch_num])
+accuracy = np.zeros([max_epoch_num])
+train_it = np.arange(1,max_epoch_num+1,1)
+for i in range(max_epoch_num):
+     data_set_cur, label_set_cur = ut2.randomShuffle(data_set, label_set)
+     loss, pred = my_model.forward(data_set_cur, np.resize(label_set_cur, (-1,1)))
+     my_model.backward(loss)
+     my_model.update_param()
+     loss_save[i] = loss
+     accuracy[i]=(1-np.mean(np.abs(np.resize(label_set_cur, (-1,1))-np.resize(pred, (-1,1)))))*100
+fig2 = plt.figure()
+ax12=fig2.add_subplot(211)
+ax22=fig2.add_subplot(212)
+ax12.plot(train_it,accuracy)
+ax12.set_title('Relu Entropy Accuracy')
+ax12.set_xlabel('Iteration')
+ax12.set_ylabel('Accuracy (%)')
+ax22.plot(train_it,accuracy)
+ax22.set_title('Relu Entropy Loss')
+ax22.set_xlabel('Iteration')
+ax22.set_ylabel('Loss')
+
