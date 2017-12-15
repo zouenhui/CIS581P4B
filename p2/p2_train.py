@@ -14,23 +14,23 @@ import matplotlib.pyplot as plt
 '''
 layer_list1 = [
      net.Flatten(),
-     net.Linear(16,4),
+     net.Linear(16,4,bias=True),
      net.Sigmoid(),
-     net.Linear(4,1),
+     net.Linear(4,1,bias=True),
      net.Sigmoid()
      ]
 layer_list2 =[
      net.Flatten(),
-     net.Linear(16,4),
+     net.Linear(16,4,bias=True),
      net.Relu(),
-     net.Linear(4,1),
+     net.Linear(4,1,bias=True),
      net.Sigmoid()
      ]
 '''
   Define loss function
 '''
-loss_layer1 = net.L2_loss()
-loss_layer2 = net.Binary_cross_entropy_loss()
+loss_layer1 = net.L2_loss(average=True,name=None)
+loss_layer2 = net.Binary_cross_entropy_loss(average=True,name=None)
 '''
   Define optimizer 
 '''
@@ -38,17 +38,17 @@ optimizer = net.SGD_Optimizer(lr_rate = 0.1, weight_decay = 5e-4, momentum = 0.9
 '''
   Build model
 '''
-my_model1 = net.Model(layer_list1, loss_layer1, optimizer)
-my_model2 = net.Model(layer_list1, loss_layer2, optimizer)
-my_model3 = net.Model(layer_list2, loss_layer1, optimizer)
-my_model4 = net.Model(layer_list2, loss_layer2, optimizer)
+my_model1 = net.Model(layer_list1, loss_layer1, optimizer,lr_decay=None)
+my_model2 = net.Model(layer_list1, loss_layer2, optimizer,lr_decay=None)
+my_model3 = net.Model(layer_list2, loss_layer1, optimizer,lr_decay=None)
+my_model4 = net.Model(layer_list2, loss_layer2, optimizer,lr_decay=None)
 '''
   Define the number of input channel and initialize the model
 '''
-my_model1.set_input_channel(1)
-my_model2.set_input_channel(1)
-my_model3.set_input_channel(1)
-my_model4.set_input_channel(1)
+my_model1.set_input_channel(16)
+my_model2.set_input_channel(16)
+my_model3.set_input_channel(16)
+my_model4.set_input_channel(16)
 '''
   Main training process
   - train N epochs, each epoch contains M steps, each step feed a batch-sized data for training,
@@ -83,19 +83,17 @@ for i in range (max_epoch_num):
   loss3, pred3 = my_model3.forward(data_set_cur, label_set_cur)
   loss4, pred4 = my_model4.forward(data_set_cur, label_set_cur)
     # backward loss
-  my_model1.backward(loss1)
-  my_model2.backward(loss2)
-  my_model3.backward(loss3)
-  my_model4.backward(loss4)
+  
     # update parameters in model
-  my_model1.update_param()
-  my_model2.update_param()
-  my_model3.update_param()
-  my_model4.update_param()
-  accuracy1=(1-np.average(np.absolute(pred1-label_set_cur)))*100
-  accuracy2=(1-np.average(np.absolute(pred2-label_set_cur)))*100
-  accuracy3=(1-np.average(np.absolute(pred3-label_set_cur)))*100
-  accuracy4=(1-np.average(np.absolute(pred4-label_set_cur)))*100
+
+  pred1=(pred1>0.5).astype(int)
+  pred2=(pred2>0.5).astype(int)
+  pred3=(pred3>0.5).astype(int)
+  pred4=(pred4>0.5).astype(int)
+  accuracy1=(1 - (np.mean(np.abs(np.resize(label_set_cur, (-1,1))-np.resize(pred1, (-1,1))))))*100
+  accuracy2=(1 - (np.mean(np.abs(np.resize(label_set_cur, (-1,1))-np.resize(pred2, (-1,1))))))*100
+  accuracy3=(1 - (np.mean(np.abs(np.resize(label_set_cur, (-1,1))-np.resize(pred3, (-1,1))))))*100
+  accuracy4=(1 - (np.mean(np.abs(np.resize(label_set_cur, (-1,1))-np.resize(pred4, (-1,1))))))*100
   accuArray1[i]=accuracy1
   accuArray2[i]=accuracy2
   accuArray3[i]=accuracy3
@@ -104,6 +102,14 @@ for i in range (max_epoch_num):
   lossArray2[i]=loss2
   lossArray3[i]=loss3
   lossArray4[i]=loss4
+  my_model1.backward(loss1)
+  my_model2.backward(loss2)
+  my_model3.backward(loss3)
+  my_model4.backward(loss4)
+  my_model1.update_param()
+  my_model2.update_param()
+  my_model3.update_param()
+  my_model4.update_param()
 # =============================================================================
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(241)
@@ -147,3 +153,7 @@ ax8.set_title('Relu Entropy Loss')
 ax8.set_xlabel('Iteration')
 ax8.set_ylabel('Loss')
 
+#part 2.2
+#lay_listConv = [
+#                       
+#               ]
