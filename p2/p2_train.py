@@ -156,9 +156,9 @@ ax8.plot(train_it[1:i+1],loss_save4[1:i+1])
 ax8.set_title('Relu Entropy loss')
 ax8.set_xlabel('Iteration')
 ax8.set_ylabel('Loss')
-plt.show()
-#part 2.2
+##############part 2.2
 lay_listConv = [
+        
                    net.Conv2d(16,7,padding = 0, stride = 1,bias=True),
                    net.BatchNorm2D(),
                    net.Relu(),
@@ -166,15 +166,16 @@ lay_listConv = [
                    net.BatchNorm2D(),
                    net.Relu(),
                    net.Flatten(),
-                   net.Linear(4, 1, bias=True),
+                   net.Linear(8*16*16, 1, bias=True),
                    net.Sigmoid()      
                ]
 loss_layer = net.Binary_cross_entropy_loss(average=True, name=None)
 optimizer = net.SGD_Optimizer(lr_rate=0.01, weight_decay=5e-4, momentum=0.99)
 my_model = net.Model(lay_listConv, loss_layer, optimizer, lr_decay=None)
-dim = 3  # RGB -----> dim = 1 (for grayscale)
+dim = 1 # RGB -----> dim = 1 (for grayscale)
 my_model.set_input_channel(dim)
 [data_set, label_set] = ut2.loadData('p22_line_imgs.npy', 'p22_line_labs.npy')
+data_set=data_set.reshape(64,1,16,16)
 max_epoch_num = 1000
 loss_save = np.zeros([max_epoch_num])
 accuracy = np.zeros([max_epoch_num])
