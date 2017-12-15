@@ -14,15 +14,11 @@ import p2_utils as ut2
   - Stack layers in order based on the architecture of your network
 '''
 layer_list = [
-  net.Conv2d(16,7,padding = 0, stride = 1, name=None, bias=True),
-  net.BatchNorm2D(),
-  net.Relu(),
-  net.Conv2d(8,7,padding = 0, stride = 1,name=None, bias=True),
-  net.BatchNorm2D(),
-  net.Relu(),
-  net.Flatten(),
-  net.Linear(8,1,bias = True),
-  net.Sigmoid()
+    net.Flatten(),
+    net.Linear(16, 4, bias=True),
+    net.Relu(),
+    net.Linear(4, 1, bias=True),
+    net.Sigmoid()
 ]
 
 '''
@@ -34,7 +30,7 @@ loss_layer = net.Binary_cross_entropy_loss(average=True, name=None)
 '''
   Define optimizer 
 '''
-optimizer = net.SGD_Optimizer(lr_rate=0.01, weight_decay=5e-4, momentum=0.99)
+optimizer = net.SGD_Optimizer(lr_rate=0.1, weight_decay=5e-4, momentum=0.99)
 
 '''
   Build model
@@ -44,7 +40,7 @@ my_model = net.Model(layer_list, loss_layer, optimizer, lr_decay=None)
 '''
   Define the number of input channel and initialize the model
 '''
-dim = 1  # RGB -----> dim = 1 (for grayscale)
+dim = 16  # Gray scale -----> dim = 3 (for RGB)
 my_model.set_input_channel(dim)
 
 '''
@@ -54,7 +50,7 @@ my_model.set_input_channel(dim)
 '''
 
 # obtain data 
-[data_set, label_set] = ut2.loadData('p22_line_imgs.npy', 'p22_line_labs.npy')
+[data_set, label_set] = ut2.loadData('p21_random_imgs.npy', 'p21_random_labs.npy')
 
 max_epoch_num = 1000
 loss_save = np.zeros([max_epoch_num])
@@ -62,30 +58,35 @@ accuracy = np.zeros([max_epoch_num])
 train_it = np.arange(1,max_epoch_num+1,1)
 
 for i in range(max_epoch_num):
-    '''
+	'''
     random shuffle data 
-  '''
-    data_set_cur, label_set_cur = ut2.randomShuffle(data_set, label_set)  # design function by yourself
-
+	'''
+	data_set_cur, label_set_cur = ut2.randomShuffle(data_set,label_set) 
+   
     # feedward data and label to the model  
-    loss, pred = my_model.forward(data_set_cur, np.resize(label_set_cur, (-1,1)))
+	loss, pred = my_model.forward(data_set_cur, label_set_cur)
+	pred = (pred>0.5).astype(int)
+
     # backward loss
-    my_model.backward(loss)
+	my_model.backward(loss)
     # update parameters in model
-    my_model.update_param()
+	my_model.update_param()
         
     #Save Loss and Accuracy For Each Iteration
-    loss_save[i] = loss
-    accuracy[i] = 1- (np.mean(np.abs(label_set_cur-pred)))
-
+	loss_save[i] = loss
+	accuracy[i] = (1 - (np.mean(np.abs(np.resize(label_set_cur, (-1,1))-np.resize(pred, (-1,1))))))*100
+	
+	if int(accuracy[i]) ==  100:
+		break
+     
 fig1 = plt.figure()
-plt.plot(train_it,loss_save)
+plt.plot(train_it[1:i],loss_save[1:i])
 plt.title('L2 Loss vs Training Iteration')
 plt.xlabel('Training Iteration')
 plt.ylabel('L2 Loss')
 
 fig2 = plt.figure()
-plt.plot(train_it, accuracy)
+plt.plot(train_it[1:i], accuracy[1:i])
 plt.title('Acuracy of L2 Loss vs Training Iteration')
 plt.xlabel('Training Iteration')
 plt.ylabel('Accuracy for L2 Loss')

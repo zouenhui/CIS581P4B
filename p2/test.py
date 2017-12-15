@@ -1,15 +1,18 @@
-import numpy as np 
-import cv2 
-import scipy 
+import numpy as np
+import cv2
+import scipy
 import cPickle
 import PyNet as net
-from p2_utils import *
+import p2_utils as ut2
+
 
 def test():
 
-	x = np.zeros([5,5])
-	print x
+    x = np.zeros([5, 5])
 
-	return x
+    print x
+
+    return x
+
 
 test()
