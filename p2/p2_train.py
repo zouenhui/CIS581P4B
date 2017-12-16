@@ -15,13 +15,13 @@ import p2_utils as ut2
 '''
 layer_list = [
   net.Conv2d(16,7,padding = 0, stride = 1, name=None, bias=True),
-  net.BatchNorm2D(),
+  net.BatchNorm2D(momentum = 0.99, name = None),
   net.Relu(),
   net.Conv2d(8,7,padding = 0, stride = 1,name=None, bias=True),
-  net.BatchNorm2D(),
+  net.BatchNorm2D(momentum = 0.99, name = None),
   net.Relu(),
   net.Flatten(),
-  net.Linear(8,1,bias = True),
+  net.Linear(128,1,bias = True),
   net.Sigmoid()
 ]
 
@@ -55,42 +55,43 @@ my_model.set_input_channel(dim)
 
 # obtain data 
 [data_set, label_set] = ut2.loadData('p22_line_imgs.npy', 'p22_line_labs.npy')
-
+data_set = data_set.reshape(64,1,16,16)
 max_epoch_num = 1000
 loss_save = np.zeros([max_epoch_num])
 accuracy = np.zeros([max_epoch_num])
 train_it = np.arange(1,max_epoch_num+1,1)
 
 for i in range(max_epoch_num):
-    '''
-    random shuffle data 
-  '''
-    data_set_cur, label_set_cur = ut2.randomShuffle(data_set, label_set)  # design function by yourself
 
-    # feedward data and label to the model  
-    loss, pred = my_model.forward(data_set_cur, np.resize(label_set_cur, (-1,1)))
-    # backward loss
-    my_model.backward(loss)
-    # update parameters in model
-    my_model.update_param()
-        
-    #Save Loss and Accuracy For Each Iteration
-    loss_save[i] = loss
-    accuracy[i] = 1- (np.mean(np.abs(label_set_cur-pred)))
+	data_set_cur, label_set_cur = ut2.randomShuffle(data_set, label_set)  # design function by yourself
+
+	# feedward data and label to the model  
+	loss, pred = my_model.forward(data_set_cur, label_set_cur)
+	# backward loss
+	my_model.backward(loss)
+	# update parameters in model
+	my_model.update_param()
+	pred=(pred>0.5).astype(int)
+	print pred
+	#Save Loss and Accuracy For Each Iteration
+	loss_save[i] = loss
+	accuracy[i] = 1- (np.mean(np.abs(label_set_cur-pred)))
+	if int(accuracy[i])==100:
+		break
 
 fig1 = plt.figure()
-plt.plot(train_it,loss_save)
+plt.plot(train_it[1:i+1],loss_save[1:i+1])
 plt.title('L2 Loss vs Training Iteration')
 plt.xlabel('Training Iteration')
 plt.ylabel('L2 Loss')
 
 fig2 = plt.figure()
-plt.plot(train_it, accuracy)
+plt.plot(train_it[1:i+1], accuracy[1:i+1])
 plt.title('Acuracy of L2 Loss vs Training Iteration')
 plt.xlabel('Training Iteration')
 plt.ylabel('Accuracy for L2 Loss')
         
-        
+plt.show()
       
         
         
